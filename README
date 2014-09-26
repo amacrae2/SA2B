@@ -1,0 +1,3 @@
+Time java -cp /Users/alecmacrae/personalWorkspace/SA2B/bin:/Users/alecmacrae/personalWorkspace/SA2B/mysql-connector-java-5.1.31/mysql-connector-java-5.1.31-bin.jar:/Users/alecmacrae/personalWorkspace/SA2B/guava-17.0.jar chao.ChaoManager find_swaps /Users/alecmacrae/Desktop/chao_order.txt
+
+alias chao='Time java -cp /Users/alecmacrae/personalWorkspace/SA2B/bin:/Users/alecmacrae/personalWorkspace/SA2B/mysql-connector-java-5.1.31/mysql-connector-java-5.1.31-bin.jar:/Users/alecmacrae/personalWorkspace/SA2B/guava-17.0.jar chao.ChaoManager'
