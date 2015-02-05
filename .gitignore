@@ -4,4 +4,4 @@ chao*.csv
 .classpath
 .project
 .settings*
-bin/*
+bin/chao/*
