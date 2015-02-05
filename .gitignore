@@ -1,0 +1,7 @@
+chao*.txt
+chao*.csv
+*.log
+.classpath
+.project
+.settings*
+bin/*

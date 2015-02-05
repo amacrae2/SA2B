@@ -102,8 +102,8 @@ public class Constants {
 
 	public static List<Double> getListOfPowers() {
 		List<Double> powers = new ArrayList<Double>();
-		powers.add(1.0/4.0);
-		powers.add(1.0/2.0);
+		powers.add(1.0/4.0); // swim stat
+		powers.add(1.0/2.0); // fly stat ...
 		powers.add(1.0/4.0);
 		powers.add(1.0/2.0);
 		powers.add(1.0/1.0);

@@ -224,7 +224,7 @@ public class ChaoManager {
 
 
 	private static void predictResult(String[] args, Connection conn, boolean unfiltered) throws ArgumentNumberException, ImpossibleRaceException {
-		if (args.length != 6 && args.length !=2) {
+		if (args.length < 2) {
 			handleWrongSizeException();
 		}
 		String course = args[1];
@@ -327,12 +327,10 @@ public class ChaoManager {
 
 
 	private static List<Chao> getChaosInRace(String[] args, Connection conn, String course) throws ImpossibleRaceException {
-		List<String> currChaoNames = new ArrayList<String>();
 		List<Chao> currChaos = null;
-		if (args.length == 6) {
-			getCurrChaoNames(args, currChaoNames);
-			if (!raceIsPossible(conn, course, currChaoNames.get(0), currChaoNames.get(1), 
-					  						  currChaoNames.get(2), currChaoNames.get(3))) {
+		if (args.length != 2) {
+			List<String> currChaoNames = getCurrChaoNames(args, 2);
+			if (!raceIsPossible(conn, course, currChaoNames)) {
 				throw new ImpossibleRaceException();
 			}
 			currChaos = getRacingChaosStats(conn, currChaoNames);
@@ -343,16 +341,12 @@ public class ChaoManager {
 	}
 
 
-	private static void getCurrChaoNames(String[] args,
-			List<String> currChaoNames) {
-		String firstPlace = args[2];
-		String secondPlace = args[3];
-		String thirdPlace = args[4];
-		String fourthPlace = args[5];
-		currChaoNames.add(firstPlace);
-		currChaoNames.add(secondPlace);
-		currChaoNames.add(thirdPlace);
-		currChaoNames.add(fourthPlace);
+	private static List<String> getCurrChaoNames(String[] args, int startIndex) {
+		List<String> currChaoNames = new ArrayList<String>();
+		for (int i = startIndex; i < args.length; i++) {
+			currChaoNames.add(args[i]);
+		}
+		return currChaoNames;
 	}
 
 	private static List<Chao> getAllChaosStats(Connection conn) {
@@ -654,7 +648,8 @@ public class ChaoManager {
 		String secondPlace = args[3];
 		String thirdPlace = args[4];
 		String fourthPlace = args[5];
-		if (!raceIsPossible(conn, course, firstPlace, secondPlace, thirdPlace, fourthPlace)) {
+		List<String> currChaoNames = getCurrChaoNames(args, 2);
+		if (!raceIsPossible(conn, course, currChaoNames)) {
 			throw new ImpossibleRaceException();
 		}
 		String sqlQuery = "INSERT INTO records "
@@ -665,17 +660,16 @@ public class ChaoManager {
 	}
 
 
-	private static boolean raceIsPossible(Connection conn, String course,
-			String firstPlace, String secondPlace, String thirdPlace,
-			String fourthPlace) {
+	private static boolean raceIsPossible(Connection conn, String course, List<String> chaoNames) {
 		if (!Constants.COURSE_LIST.contains(course)) {
 			System.out.println("Error: course does not exist");
 			return false;
 		}
-		if (!chaoExists(conn, firstPlace) || !chaoExists(conn, secondPlace) 
-				|| !chaoExists(conn, thirdPlace) || !chaoExists(conn, fourthPlace)) {
-			System.out.println("Error: Chao does not exist");
-			return false;
+		for (String chaoName : chaoNames) {
+			if (!chaoExists(conn, chaoName)) {
+				System.out.println("Error: Chao "+chaoName+" does not exist");
+				return false;
+			}
 		}
 		return true;
 	}
@@ -940,8 +934,8 @@ public class ChaoManager {
 		System.out.println("Command options:");
 		System.out.println("add_chao");
 		System.out.println("add_memory_card");
-		System.out.println("update_memory card");
-		System.out.println("write_status");
+		System.out.println("update_memory_card");
+		System.out.println("write_stats");
 		System.out.println("find_swaps");
 		System.out.println("add_result");
 		System.out.println("predict_result");
