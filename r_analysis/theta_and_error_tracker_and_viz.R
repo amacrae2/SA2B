@@ -1,7 +1,7 @@
 # shows the theta values over 1000 iterations of gradient descent for the various models
 # Also shows error over the iterations if param = "error"
 
-param = "swim" # options include swim, fly, run, power, error (and for unfiltered only: hat, int, trips, and luck)
+param = "error" # options include swim, fly, run, power, error (and for unfiltered only: hat, int, trips, and luck)
 
 getBaseIndex <- function(s) {
   if (s == "swim") {
@@ -21,8 +21,8 @@ getBaseIndex <- function(s) {
 
 getIndex <- function(s, filter) {
   x = getBaseIndex(s)
-  if (x != NULL) {
-    if (s = "error") {
+  if (x) {
+    if (s == "error" && !filter) {
       return(10)
     } else {
       return(x)
@@ -45,31 +45,31 @@ getIndex <- function(s, filter) {
 # filtered Results
 x = getIndex(param,TRUE)
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_thetas_filtered_stochastic.csv", header = FALSE, sep = ",")
+data = read.table("../chao_thetas_filtered_stochastic.csv", header = FALSE, sep = ",")
 plot(data[,x][1:1000],type="o")
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_thetas_filtered_batch.csv", header = FALSE, sep = ",")
+data = read.table("../chao_thetas_filtered_batch.csv", header = FALSE, sep = ",")
 plot(data[,x][1:1000],type="o")
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_thetas_filtered_final_stochastic.csv", header = FALSE, sep = ",")
+data = read.table("../chao_thetas_filtered_final_stochastic.csv", header = FALSE, sep = ",")
 plot(data[,x][1:1000],type="o")
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_thetas_filtered_final_batch.csv", header = FALSE, sep = ",")
+data = read.table("../chao_thetas_filtered_final_batch.csv", header = FALSE, sep = ",")
 plot(data[,x][1:1000],type="o")
 
 # Unfiltered results
 x = getIndex(param,FALSE)
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_thetas_unfiltered_stochastic.csv", header = FALSE, sep = ",")
+data = read.table("../chao_thetas_unfiltered_stochastic.csv", header = FALSE, sep = ",")
 plot(data$V10[1:1000],type="o")
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_thetas_unfiltered_batch.csv", header = FALSE, sep = ",")
+data = read.table("../chao_thetas_unfiltered_batch.csv", header = FALSE, sep = ",")
 plot(data$V10[1:1000],type="o")
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_thetas_unfiltered_final_stochastic.csv", header = FALSE, sep = ",")
+data = read.table("../chao_thetas_unfiltered_final_stochastic.csv", header = FALSE, sep = ",")
 plot(data$V1[1:1000],type="o")
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_thetas_unfiltered_final_batch.csv", header = FALSE, sep = ",")
+data = read.table("../chao_thetas_unfiltered_final_batch.csv", header = FALSE, sep = ",")
 plot(data$V1[1:1000],type="o")
 
 

@@ -1,6 +1,6 @@
 # basic correlation analysis of the features
 
-data = read.table("/Users/alecmacrae/personalWorkspace/SA2B/chao_stats.txt", header = TRUE, sep = "\t")
+data = read.table("../chao_stats.txt", header = TRUE, sep = "\t")
 
 cor(data[,4:20])
 
