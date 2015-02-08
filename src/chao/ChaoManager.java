@@ -116,7 +116,7 @@ public class ChaoManager {
 			writer = new PrintWriter(Constants.OUTPUT_FILE_NAME2, "UTF-8");
 			writer.println("name\tmemory_card\tgarden\tswim\tfly\trun\tpower\ttotal\t"
 					+ "swim_stat\tfly_stat\trun_stat\tpower_stat\ttotal_stat\tstamina\tstamina_stat"
-					+ "\that\tintellegence\ttrips\tluck");
+					+ "\that\tintellegence\ttrips\tluck\tgeneration");
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -133,7 +133,7 @@ public class ChaoManager {
 						   rs.getString(9)+"\t"+ rs.getString(10)+"\t"+ rs.getString(11)+"\t"+
 						   rs.getString(12)+"\t"+ rs.getString(13)+"\t"+ rs.getString(14)+"\t"+
 						   rs.getString(15)+"\t"+ rs.getString(16)+"\t"+ rs.getString(17)+"\t"+
-						   rs.getString(18)+"\t"+ rs.getString(19)+"\t"+ rs.getString(20));
+						   rs.getString(18)+"\t"+ rs.getString(19)+"\t"+ rs.getString(20)+"\t"+ rs.getString(21));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
