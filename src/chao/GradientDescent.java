@@ -14,10 +14,11 @@ public class GradientDescent {
 	private static final int UNFILTERED_NUM_THETAS = 9;
 	private static final int MAX_ITERATIONS = 1000;
 	private static final double STOPPING_DELTA = 0.001; 
-	private static final double STOCHASTIC_ALPHA_FILTERED = 0.1; //0.0000001
-	private static final double BATCH_ALPHA_FILTERED = 0.001; //0.00000000001
-	private static final double STOCHASTIC_ALPHA_UNFILTERED = 0.1; //0.00000001
-	private static final double BATCH_ALPHA_UNFILTERED = 0.001; //0.00000000001
+	// adjust the alpha values to tune the speed of gradient descent
+	private static final double STOCHASTIC_ALPHA_FILTERED = 0.1; 
+	private static final double BATCH_ALPHA_FILTERED = 0.001; 
+	private static final double STOCHASTIC_ALPHA_UNFILTERED = 0.1; 
+	private static final double BATCH_ALPHA_UNFILTERED = 0.001; 
 	
 	public static List<Double> getThetasFiltered(Map<Chao, Integer> chaoRecords, List<Map<String, Integer>> minMaxes, boolean batch, String thetaFileName, boolean power) {
 		List<Double> thetas = new ArrayList<Double>();

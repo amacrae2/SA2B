@@ -43,8 +43,8 @@ public class Constants {
 	public static final String THETA_FILE_NAME_UNFILTERED_STOCHASTIC = "chao_thetas_unfiltered_stochastic.csv";
 	public static final String THETA_FILE_NAME_FILTERED_BATCH = "chao_thetas_filtered_batch.csv";
 	public static final String THETA_FILE_NAME_UNFILTERED_BATCH = "chao_thetas_unfiltered_batch.csv";
-	public static final String THETA_FILE_NAME_FILTERED_FINAL = "chao_thetas_filtered_final.csv";
-	public static final String THETA_FILE_NAME_UNFILTERED_FINAL = "chao_thetas_unfiltered_final.csv";
+	public static final String THETA_FILE_NAME_FILTERED_FINAL_STOCHASTIC = "chao_thetas_filtered_final_stochastic.csv";
+	public static final String THETA_FILE_NAME_UNFILTERED_FINAL_STOCHASTIC = "chao_thetas_unfiltered_final_stochastic.csv";
 	public static final String THETA_FILE_NAME_FILTERED_FINAL_BATCH = "chao_thetas_filtered_final_batch.csv";
 	public static final String THETA_FILE_NAME_UNFILTERED_FINAL_BATCH = "chao_thetas_unfiltered_final_batch.csv";
 

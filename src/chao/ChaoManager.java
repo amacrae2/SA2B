@@ -258,8 +258,8 @@ public class ChaoManager {
 		List<Double> thetasUnfilteredStochastic = GradientDescent.getThetasUnfiltered(chaoRecords, minMaxes, false, Constants.THETA_FILE_NAME_UNFILTERED_STOCHASTIC, power);
 		List<Double> thetasFilteredBatch = GradientDescent.getThetasFiltered(chaoRecords, minMaxes, true, Constants.THETA_FILE_NAME_FILTERED_BATCH, power);
 		List<Double> thetasUnfilteredBatch = GradientDescent.getThetasUnfiltered(chaoRecords, minMaxes, true, Constants.THETA_FILE_NAME_UNFILTERED_BATCH, power);
-		List<Double> thetasFilteredStochasticFinal = GradientDescent.getThetasFiltered(chaoRecordsFinal, minMaxes, false, Constants.THETA_FILE_NAME_FILTERED_FINAL, power);
-		List<Double> thetasUnfilteredStochasticFinal = GradientDescent.getThetasUnfiltered(chaoRecordsFinal, minMaxes, false, Constants.THETA_FILE_NAME_UNFILTERED_FINAL, power);
+		List<Double> thetasFilteredStochasticFinal = GradientDescent.getThetasFiltered(chaoRecordsFinal, minMaxes, false, Constants.THETA_FILE_NAME_FILTERED_FINAL_STOCHASTIC, power);
+		List<Double> thetasUnfilteredStochasticFinal = GradientDescent.getThetasUnfiltered(chaoRecordsFinal, minMaxes, false, Constants.THETA_FILE_NAME_UNFILTERED_FINAL_STOCHASTIC, power);
 		List<Double> thetasFilteredBatchFinal = GradientDescent.getThetasFiltered(chaoRecordsFinal, minMaxes, true, Constants.THETA_FILE_NAME_FILTERED_FINAL_BATCH, power);
 		List<Double> thetasUnfilteredBatchFinal = GradientDescent.getThetasUnfiltered(chaoRecordsFinal, minMaxes, true, Constants.THETA_FILE_NAME_UNFILTERED_FINAL_BATCH, power);
 		System.out.println("");
@@ -281,7 +281,7 @@ public class ChaoManager {
 		printChaoRanks(currChaos, minMaxes, thetasFilteredStochastic, thetasUnfilteredStochastic, power, unfiltered);
 		System.out.println("Batch: ");
 		printChaoRanks(currChaos, minMaxes, thetasFilteredBatch, thetasUnfilteredBatch, power, unfiltered);
-		System.out.println("Final: ");
+		System.out.println("Final Stochastic: ");
 		printChaoRanks(currChaos, minMaxes, thetasFilteredStochasticFinal, thetasUnfilteredStochasticFinal, power, unfiltered);
 		System.out.println("Final Batch: ");
 		printChaoRanks(currChaos, minMaxes, thetasFilteredBatchFinal, thetasUnfilteredBatchFinal, power, unfiltered);
