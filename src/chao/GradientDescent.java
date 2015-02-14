@@ -3,6 +3,8 @@ package chao;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,25 +22,63 @@ public class GradientDescent {
 	private static final double STOCHASTIC_ALPHA_UNFILTERED = 0.1; 
 	private static final double BATCH_ALPHA_UNFILTERED = 0.001; 
 	
-	public static List<Double> getThetasFiltered(Map<Chao, Integer> chaoRecords, List<Map<String, Integer>> minMaxes, boolean batch, String thetaFileName, boolean power) {
+	public static List<Double> getThetasFiltered(String course, Map<Chao, Integer> chaoRecords, List<Map<String, Integer>> minMaxes, boolean finalOnly, boolean batch, String thetaFileName, boolean power) {
 		List<Double> thetas = new ArrayList<Double>();
 		double delta = Double.MAX_VALUE;
 		for (int i = 0; i < FILTERED_NUM_THETAS; i++) {
 			thetas.add(THETA_INITIAL_VALUE);
 		}
 		List<Map<String, Integer>> filteredMinMaxes = minMaxes.subList(0, FILTERED_NUM_THETAS);
-		performGradientDescent(chaoRecords, filteredMinMaxes, batch, thetas, delta, STOCHASTIC_ALPHA_FILTERED, BATCH_ALPHA_FILTERED, thetaFileName, power);
+		performGradientDescent(chaoRecords, filteredMinMaxes, batch, thetas, delta, STOCHASTIC_ALPHA_FILTERED, BATCH_ALPHA_FILTERED, thetaFileName, power);		
+		writeThetasToSQL(course, batch, power, finalOnly, thetas, "1");
 		return thetas;
 	}
 
-	public static List<Double> getThetasUnfiltered(Map<Chao, Integer> chaoRecords, List<Map<String, Integer>> minMaxes, boolean batch, String thetaFileName, boolean power) {
+	public static List<Double> getThetasUnfiltered(String course, Map<Chao, Integer> chaoRecords, List<Map<String, Integer>> minMaxes, boolean finalOnly, boolean batch, String thetaFileName, boolean power) {
 		List<Double> thetas = new ArrayList<Double>();
 		double delta = Double.MAX_VALUE;
 		for (int i = 0; i < UNFILTERED_NUM_THETAS; i++) {
 			thetas.add(THETA_INITIAL_VALUE);
 		}
 		performGradientDescent(chaoRecords, minMaxes, batch, thetas, delta, STOCHASTIC_ALPHA_UNFILTERED, BATCH_ALPHA_UNFILTERED, thetaFileName, power);
+		writeThetasToSQL(course, batch, power, finalOnly, thetas, "0");
 		return thetas;
+	}
+	
+	private static void writeThetasToSQL(String course, boolean batch, boolean power, boolean finalOnly, List<Double> thetas, String filtered) {
+		String sqlQuery = null;
+		String algo = (batch) ? "batch" : "stochastic";
+		String poly = String.valueOf(((power) ? 1 : 0));
+		String fin = String.valueOf(((finalOnly) ? 1 : 0));
+		ResultSet rs = SQLManager.queryFromDB(SQLManager.getConnection(), "SELECT id FROM thetas WHERE course = '"
+																		  +course+"' AND filtered = "+filtered+
+																		  " AND algo_type = '"+algo+"' AND poly = "
+																		  +poly+" AND final = "+fin+" FOR UPDATE;");
+		try {
+			if (rs.next()) {
+				String id = rs.getString(1);
+				sqlQuery = "UPDATE thetas SET swim = "+thetas.get(0)+", fly = "+thetas.get(1)+",run = "+thetas.get(2)+", power = "+thetas.get(3);
+				if (thetas.size() == FILTERED_NUM_THETAS) {
+					sqlQuery += ", stamina = 0, hat = 0, intellegence = 0, trips = 0, luck = 0 WHERE id = "+id+";";
+				} else {
+					sqlQuery += ", stamina = "+thetas.get(4)+", hat = "+thetas.get(5)+", intellegence = "+thetas.get(6)+", trips = "+thetas.get(7)+", luck = "+thetas.get(8)+" WHERE id = "+id+";";
+				}
+			} else {
+				sqlQuery = "INSERT INTO thetas ( course, filtered, algo_type, poly, final, "
+						+ "swim, fly, run, power, stamina, hat, intellegence, trips, luck )"
+						+ " VALUES ( '"+course+"', "+filtered+", '"+algo+"', "+poly+", "+fin+", "
+						+ thetas.get(0)+", "+thetas.get(1)+", "+thetas.get(2)+", "+thetas.get(3);
+				if (thetas.size() == FILTERED_NUM_THETAS) {
+					sqlQuery += ", 0, 0, 0, 0, 0 );";
+				} else {
+					sqlQuery += ", "+thetas.get(4)+", "+thetas.get(5)+", "+thetas.get(6)+", "+thetas.get(7)+", "+thetas.get(8)+" );";
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		SQLManager.updateDB(SQLManager.getConnection(), sqlQuery);
 	}
 	
 	private static void performGradientDescent(Map<Chao, Integer> chaoRecords, List<Map<String, Integer>> minMaxes, boolean batch, List<Double> thetas, double delta, double stochasticAlpha, double batchAlpha, String thetaFileName, boolean power) {
@@ -163,5 +203,7 @@ public class GradientDescent {
 		}
 		return num/Math.abs(num);
 	}
+	
+	
 	
 }

@@ -241,27 +241,26 @@ public class ChaoManager {
 		// find max and min values for each feature
 		List<Map<String, Integer>> minMaxes = getFeatureMinMaxes(conn);
 				
-		performGradientDescentToFindThetasAndPrintResults(currChaos, chaoRecords, chaoRecordsFinal, minMaxes, false, unfiltered);
-		performGradientDescentToFindThetasAndPrintResults(currChaos, chaoRecords, chaoRecordsFinal, minMaxes, true, unfiltered);
+		performGradientDescentToFindThetasAndPrintResults(course, currChaos, chaoRecords, chaoRecordsFinal, minMaxes, false, unfiltered);
+		performGradientDescentToFindThetasAndPrintResults(course, currChaos, chaoRecords, chaoRecordsFinal, minMaxes, true, unfiltered);
 	}
 
 
 	private static void performGradientDescentToFindThetasAndPrintResults(
-			List<Chao> currChaos, Map<Chao, Integer> chaoRecords,
-			Map<Chao, Integer> chaoRecordsFinal,
-			List<Map<String, Integer>> minMaxes, boolean power, boolean unfiltered) {
+			String course, List<Chao> currChaos, Map<Chao, Integer> chaoRecords,
+			Map<Chao, Integer> chaoRecordsFinal, List<Map<String, Integer>> minMaxes, boolean power, boolean unfiltered) {
 		// find thetas 
 		if (power) {
 			System.out.println("Finding power results...");
 		}
-		List<Double> thetasFilteredStochastic = GradientDescent.getThetasFiltered(chaoRecords, minMaxes, false, Constants.THETA_FILE_NAME_FILTERED_STOCHASTIC, power);
-		List<Double> thetasUnfilteredStochastic = GradientDescent.getThetasUnfiltered(chaoRecords, minMaxes, false, Constants.THETA_FILE_NAME_UNFILTERED_STOCHASTIC, power);
-		List<Double> thetasFilteredBatch = GradientDescent.getThetasFiltered(chaoRecords, minMaxes, true, Constants.THETA_FILE_NAME_FILTERED_BATCH, power);
-		List<Double> thetasUnfilteredBatch = GradientDescent.getThetasUnfiltered(chaoRecords, minMaxes, true, Constants.THETA_FILE_NAME_UNFILTERED_BATCH, power);
-		List<Double> thetasFilteredStochasticFinal = GradientDescent.getThetasFiltered(chaoRecordsFinal, minMaxes, false, Constants.THETA_FILE_NAME_FILTERED_FINAL_STOCHASTIC, power);
-		List<Double> thetasUnfilteredStochasticFinal = GradientDescent.getThetasUnfiltered(chaoRecordsFinal, minMaxes, false, Constants.THETA_FILE_NAME_UNFILTERED_FINAL_STOCHASTIC, power);
-		List<Double> thetasFilteredBatchFinal = GradientDescent.getThetasFiltered(chaoRecordsFinal, minMaxes, true, Constants.THETA_FILE_NAME_FILTERED_FINAL_BATCH, power);
-		List<Double> thetasUnfilteredBatchFinal = GradientDescent.getThetasUnfiltered(chaoRecordsFinal, minMaxes, true, Constants.THETA_FILE_NAME_UNFILTERED_FINAL_BATCH, power);
+		List<Double> thetasFilteredStochastic = GradientDescent.getThetasFiltered(course, chaoRecords, minMaxes, false, false, Constants.THETA_FILE_NAME_FILTERED_STOCHASTIC, power);
+		List<Double> thetasUnfilteredStochastic = GradientDescent.getThetasUnfiltered(course, chaoRecords, minMaxes, false, false, Constants.THETA_FILE_NAME_UNFILTERED_STOCHASTIC, power);
+		List<Double> thetasFilteredBatch = GradientDescent.getThetasFiltered(course, chaoRecords, minMaxes, false, true, Constants.THETA_FILE_NAME_FILTERED_BATCH, power);
+		List<Double> thetasUnfilteredBatch = GradientDescent.getThetasUnfiltered(course, chaoRecords, minMaxes, false, true, Constants.THETA_FILE_NAME_UNFILTERED_BATCH, power);
+		List<Double> thetasFilteredStochasticFinal = GradientDescent.getThetasFiltered(course, chaoRecordsFinal, minMaxes, true, false, Constants.THETA_FILE_NAME_FILTERED_FINAL_STOCHASTIC, power);
+		List<Double> thetasUnfilteredStochasticFinal = GradientDescent.getThetasUnfiltered(course, chaoRecordsFinal, minMaxes, true, false, Constants.THETA_FILE_NAME_UNFILTERED_FINAL_STOCHASTIC, power);
+		List<Double> thetasFilteredBatchFinal = GradientDescent.getThetasFiltered(course, chaoRecordsFinal, minMaxes, true, true, Constants.THETA_FILE_NAME_FILTERED_FINAL_BATCH, power);
+		List<Double> thetasUnfilteredBatchFinal = GradientDescent.getThetasUnfiltered(course, chaoRecordsFinal, minMaxes, true, true, Constants.THETA_FILE_NAME_UNFILTERED_FINAL_BATCH, power);
 		System.out.println("");
 		System.out.println("Filtered thetas stochastic: "+thetasFilteredStochastic);
 		System.out.println("Unfiltered thetas stochastic: "+thetasUnfilteredStochastic);
@@ -559,7 +558,7 @@ public class ChaoManager {
 			// get feature mins and maxes to normalize
 			List<Map<String, Integer>> minMaxes = getFeatureMinMaxes(conn);
 			// find thetas
-			List<Double> thetasFilteredStochastic = GradientDescent.getThetasFiltered(chaoRecords, minMaxes, false, Constants.THETA_FILE_NAME_FILTERED_STOCHASTIC, false);
+			List<Double> thetasFilteredStochastic = GradientDescent.getThetasFiltered(course, chaoRecords, minMaxes, false, false, Constants.THETA_FILE_NAME_FILTERED_STOCHASTIC, false);
 			for (List<String> resultRound : courseResults.get(course)) {
 				List<Chao> currGenChaos = null;
 				if (resultRound.size() == Constants.TOTAL_NUM_CHAOS_GEN_ONE) {
