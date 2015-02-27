@@ -6,12 +6,14 @@ public class OutputScore implements Comparable<OutputScore> {
 	private double filteredScore;
 	private double unfilteresScore;
 	private boolean unfiltered;
+	private String chaoName;
 	
-	public OutputScore(String output, double filteredScore, double unfilteresScore, boolean unfiltered) {
+	public OutputScore(String output, double filteredScore, double unfilteresScore, boolean unfiltered, String chaoName) {
 		this.output = output;
 		this.filteredScore = filteredScore;
 		this.unfilteresScore = unfilteresScore;
 		this.unfiltered = unfiltered;
+		this.chaoName = chaoName;
 	}
 	
 	public OutputScore(String output, double filteredScore) {
@@ -46,6 +48,10 @@ public class OutputScore implements Comparable<OutputScore> {
 
 	public double getUnfilteresScore() {
 		return unfilteresScore;
+	}
+	
+	public String getChaoName() {
+		return chaoName;
 	}
 
 

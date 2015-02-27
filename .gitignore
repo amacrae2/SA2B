@@ -5,3 +5,4 @@ chao*.csv
 .project
 .settings*
 bin/chao/*
+*.Rhistory

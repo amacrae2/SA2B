@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class ChaoManager {	
 	
-	public static void main(String[] args) throws ChaoSwapException, ArgumentNumberException, IOException, ImpossibleRaceException {
+	public static void main(String[] args) throws ChaoSwapException, ArgumentNumberException, IOException, ImpossibleRaceException, InfiniteLoopException {
 		Connection conn = SQLManager.getConnection();
 		
 		// if no parameters given
@@ -65,6 +65,9 @@ public class ChaoManager {
 			// make swaps based on file or input chaos to swap
 			makeChaoSwap(args, conn);
 			System.out.println("Success!");
+		} else if (command.equals("update_dbs")) {
+			// call all variations of predict_results to update the mysql dbs
+			updateDBs(conn);
 		} else if (command.equals("commands")) {
 			displayCommands(args);
 		} else {
@@ -73,6 +76,16 @@ public class ChaoManager {
 		}
 		
 		
+	}
+
+
+	private static void updateDBs(Connection conn) throws ArgumentNumberException, ImpossibleRaceException,
+														  InfiniteLoopException {
+		for (String course : Constants.COURSE_LIST) {
+			String[] args2 = new String[] {"update_dbs", course};
+			predictResult(args2, conn, false);
+			predictResult(args2, conn, true);
+		}
 	}
 
 
@@ -223,7 +236,7 @@ public class ChaoManager {
 	}
 
 
-	private static void predictResult(String[] args, Connection conn, boolean unfiltered) throws ArgumentNumberException, ImpossibleRaceException {
+	private static void predictResult(String[] args, Connection conn, boolean unfiltered) throws ArgumentNumberException, ImpossibleRaceException, InfiniteLoopException {
 		if (args.length < 2) {
 			handleWrongSizeException();
 		}
@@ -248,7 +261,7 @@ public class ChaoManager {
 
 	private static void performGradientDescentToFindThetasAndPrintResults(
 			String course, List<Chao> currChaos, Map<Chao, Integer> chaoRecords,
-			Map<Chao, Integer> chaoRecordsFinal, List<Map<String, Integer>> minMaxes, boolean power, boolean unfiltered) {
+			Map<Chao, Integer> chaoRecordsFinal, List<Map<String, Integer>> minMaxes, boolean power, boolean unfiltered) throws InfiniteLoopException {
 		// find thetas 
 		if (power) {
 			System.out.println("Finding power results...");
@@ -275,15 +288,136 @@ public class ChaoManager {
 		System.out.println("Unfiltered thetas batch final: "+thetasUnfilteredBatchFinal);
 		System.out.println("");
 		
+		int numChaos = findNumChaosFromSQL();
+		Connection conn = SQLManager.getConnection();
+		
 		// calculate a score for each chao in current race
 		System.out.println("Stochastic: ");
-		printChaoRanks(currChaos, minMaxes, thetasFilteredStochastic, thetasUnfilteredStochastic, power, unfiltered);
+		List<OutputScore> outputs = findAndPrintChaoRanks(currChaos, minMaxes, thetasFilteredStochastic, thetasUnfilteredStochastic, power, unfiltered);
+		String suffix = "_stochastic";
+		updateDBs(course, currChaos, power, unfiltered, numChaos, conn, outputs, suffix);
 		System.out.println("Batch: ");
-		printChaoRanks(currChaos, minMaxes, thetasFilteredBatch, thetasUnfilteredBatch, power, unfiltered);
+		findAndPrintChaoRanks(currChaos, minMaxes, thetasFilteredBatch, thetasUnfilteredBatch, power, unfiltered);
+		suffix = "_batch";
+		updateDBs(course, currChaos, power, unfiltered, numChaos, conn, outputs, suffix);
 		System.out.println("Final Stochastic: ");
-		printChaoRanks(currChaos, minMaxes, thetasFilteredStochasticFinal, thetasUnfilteredStochasticFinal, power, unfiltered);
+		findAndPrintChaoRanks(currChaos, minMaxes, thetasFilteredStochasticFinal, thetasUnfilteredStochasticFinal, power, unfiltered);
+		suffix = "_stochastic_final";
+		updateDBs(course, currChaos, power, unfiltered, numChaos, conn, outputs, suffix);
 		System.out.println("Final Batch: ");
-		printChaoRanks(currChaos, minMaxes, thetasFilteredBatchFinal, thetasUnfilteredBatchFinal, power, unfiltered);
+		findAndPrintChaoRanks(currChaos, minMaxes, thetasFilteredBatchFinal, thetasUnfilteredBatchFinal, power, unfiltered);
+		suffix = "_batch_final";
+		updateDBs(course, currChaos, power, unfiltered, numChaos, conn, outputs, suffix);
+	}
+
+
+	private static void updateDBs(String course, List<Chao> currChaos, boolean power, boolean unfiltered, int numChaos, Connection conn,
+								  List<OutputScore> outputs, String suffix) throws InfiniteLoopException {
+		String prefix;
+		if (unfiltered) {
+			prefix = "unfiltered";
+		} else {
+			prefix = "filtered";
+		}
+		updateScoresDBWrapper(course, power, outputs, suffix, conn);
+		if (currChaos.size() == numChaos) {
+			String field = prefix + suffix;
+			updatePredictionsDBWrapper(course, power, unfiltered, outputs, field, conn);
+		}
+	}
+
+
+	private static void updatePredictionsDBWrapper(String course, boolean power, boolean unfiltered, List<OutputScore> outputs, String field, Connection conn) 
+												   throws InfiniteLoopException {
+		if (power) {
+			field += "_power";
+		}
+		for (int i = 1; i <= outputs.size(); i++) {
+			updatePredictionsDB(course, outputs, field, i, conn, true);
+		}
+	}
+
+
+	private static void updatePredictionsDB(String course, List<OutputScore> outputs, String field,
+			int i, Connection conn, boolean firstPass) throws InfiniteLoopException {
+		ResultSet rs = SQLManager.queryFromDB(conn, "SELECT id FROM predictions WHERE course = '"
+																		  +course+"' AND name = '"+outputs.get(i-1).getChaoName()+"' FOR UPDATE;");
+		String sqlQuery = null;
+		try {
+			if (rs.next()) {
+				String id = rs.getString(1);
+				sqlQuery = "UPDATE predictions SET "+field+" = "+i+" WHERE id = "+id+";";
+				SQLManager.updateDB(conn, sqlQuery);
+			} else {
+				if (!firstPass) {
+					throw new InfiniteLoopException();
+				}
+				sqlQuery = "INSERT INTO predictions ( name, course, filtered_stochastic, unfiltered_stochastic, filtered_batch, unfiltered_batch, "
+						+ "filtered_stochastic_final, unfiltered_stochastic_final, filtered_batch_final, unfiltered_batch_final, "
+						+ "filtered_stochastic_power, unfiltered_stochastic_power, filtered_batch_power, unfiltered_batch_power, "
+						+"filtered_stochastic_final_power, unfiltered_stochastic_final_power, filtered_batch_final_power, unfiltered_batch_final_power )"
+						+ " VALUES ( '"+outputs.get(i-1).getChaoName()+"', '"+course+"', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);";
+				SQLManager.updateDB(conn, sqlQuery);
+				updatePredictionsDB(course, outputs, field, i, conn, false);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	private static void updateScoresDBWrapper(String course, boolean power,
+			List<OutputScore> outputs, String suffix, Connection conn) throws InfiniteLoopException {
+		if (power) {
+			suffix += "_power";
+		}
+		for (OutputScore output : outputs) {
+			updateScoresDB(course, outputs, suffix, output, conn, true);
+		}
+	}
+
+
+	private static void updateScoresDB(String course,
+			List<OutputScore> outputs, String suffix,
+			OutputScore output, Connection conn, boolean firstPass) throws InfiniteLoopException {
+		ResultSet rs = SQLManager.queryFromDB(conn, "SELECT id FROM scores WHERE course = '"
+																		  +course+"' AND name = '"+output.getChaoName()+"' FOR UPDATE;");
+		String sqlQuery = null;
+		try {
+			if (rs.next()) {
+				String id = rs.getString(1);
+				sqlQuery = "UPDATE scores SET filtered"+suffix+" = "+output.getFilteredScore()+", unfiltered"+suffix+" = "+output.getUnfilteresScore()+" WHERE id = "+id+";";
+				SQLManager.updateDB(conn, sqlQuery);
+			} else {
+				if (!firstPass) {
+					throw new InfiniteLoopException();
+				}
+				sqlQuery = "INSERT INTO scores ( name, course, filtered_stochastic, unfiltered_stochastic, filtered_batch, unfiltered_batch, "
+						+ "filtered_stochastic_final, unfiltered_stochastic_final, filtered_batch_final, unfiltered_batch_final, "
+						+ "filtered_stochastic_power, unfiltered_stochastic_power, filtered_batch_power, unfiltered_batch_power, "
+						+"filtered_stochastic_final_power, unfiltered_stochastic_final_power, filtered_batch_final_power, unfiltered_batch_final_power )"
+						+ " VALUES ( '"+output.getChaoName()+"', '"+course+"', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);";
+				SQLManager.updateDB(conn, sqlQuery);
+				updateScoresDB(course, outputs, suffix, output, conn, false);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	private static int findNumChaosFromSQL() {
+		int numChaos = 0;
+		ResultSet rs = SQLManager.queryFromDB(SQLManager.getConnection(), "SELECT COUNT(*) FROM Chao;");
+		
+		try {
+			if (rs.next()) {
+				numChaos = rs.getInt(1);
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		return numChaos;
 	}
 
 
@@ -306,7 +440,7 @@ public class ChaoManager {
 	}
 
 
-	private static void printChaoRanks(List<Chao> currChaos, List<Map<String, Integer>> minMaxes, List<Double> thetasFiltered, List<Double> thetasUnfiltered, boolean power, boolean unfiltered) {
+	private static List<OutputScore> findAndPrintChaoRanks(List<Chao> currChaos, List<Map<String, Integer>> minMaxes, List<Double> thetasFiltered, List<Double> thetasUnfiltered, boolean power, boolean unfiltered) {
 		List<OutputScore> outputs = new ArrayList<OutputScore>();
 		for (Chao chao : currChaos) {
 			String output = "";
@@ -315,13 +449,14 @@ public class ChaoManager {
 			// get score for unfiltered results
 			double scoreUnfiltered = GradientDescent.findScore(chao, thetasUnfiltered, minMaxes, power);
 			output += chao.getName()+": [Filtered: "+scoreFiltered+"], [Unfiltered: "+scoreUnfiltered+"]";
-			OutputScore outputScore = new OutputScore(output, scoreFiltered, scoreUnfiltered, unfiltered);
+			OutputScore outputScore = new OutputScore(output, scoreFiltered, scoreUnfiltered, unfiltered, chao.getName());
 			outputs.add(outputScore);
 		}
 		Collections.sort(outputs);
 		for (OutputScore output : outputs) {
 			System.out.println(output.getOutput());
 		}
+		return outputs;
 	}
 
 
@@ -939,6 +1074,7 @@ public class ChaoManager {
 		System.out.println("add_result");
 		System.out.println("predict_result");
 		System.out.println("make_swap");
+		System.out.println("update_dbs");
 	}
 
 	private static void addChao(Connection conn, String name, String memoryCard, String garden, 

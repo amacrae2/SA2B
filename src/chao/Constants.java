@@ -64,6 +64,7 @@ public class Constants {
 	    add("garnet");
 	    add("onix");
 	    add("diamond");
+	    add("overall");
 	}};
 	
 	
