@@ -6,3 +6,4 @@ chao*.csv
 .settings*
 bin/chao/*
 *.Rhistory
+*/.ipynb_checkpoints/*
