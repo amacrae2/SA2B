@@ -348,6 +348,11 @@ public class ChaoManager {
 				String id = rs.getString(1);
 				sqlQuery = "UPDATE predictions SET "+field+" = "+i+" WHERE id = "+id+";";
 				SQLManager.updateDB(conn, sqlQuery);
+				sqlQuery = "UPDATE predictions SET average_prediction = ((filtered_stochastic + unfiltered_stochastic + filtered_batch + unfiltered_batch + "
+						+ "filtered_stochastic_final + unfiltered_stochastic_final + filtered_batch_final + unfiltered_batch_final + filtered_stochastic_power "
+						+"+ unfiltered_stochastic_power + filtered_batch_power + unfiltered_batch_power + filtered_stochastic_final_power + unfiltered_stochastic_final_power + "
+						+"filtered_batch_final_power + unfiltered_batch_final_power) / 16.0);";
+				SQLManager.updateDB(conn, sqlQuery);
 			} else {
 				if (!firstPass) {
 					throw new InfiniteLoopException();
