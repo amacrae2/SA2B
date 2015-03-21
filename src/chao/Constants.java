@@ -15,6 +15,7 @@ public class Constants {
 	public static final String NEUTRAL_GARDEN_NAME = "Neutral";
 	public static final String DARK_GARDEN_NAME = "Dark";
 	
+	public static final String ROUND = "round3";
 	public static final int GARDEN_SIZE = 8;
 	public static final int FINDS_GOAL_STATE = 10000;
 	public static final int CHAO_SWAP_PENALTY = -10;

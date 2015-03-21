@@ -614,14 +614,23 @@ public class ChaoManager {
 
 
 	private static void addResult(String[] args, Connection conn) throws ArgumentNumberException, ImpossibleRaceException {
-		if (args.length != 6 && args.length != 3) {
+		if (args.length != 6 && args.length != 3 && args.length != 4) {
 			handleWrongSizeException();
 		}
 		if (args.length == 6) {
 			addResultFromInput(args, conn);
 		} else {
+			boolean refresh = false;
+			if (args.length == 4) {
+				if (args[3].equals("refresh")) {
+					refresh = true;
+				} else {
+					System.out.println("expecting 'refresh' as 3rd arg if going just wanting to update luck and predictions DB");
+					throw new ArgumentNumberException();
+				}
+			}
 			List<String> chaos = extractChaoNames(args);
-			addResultsFromFile(args, conn, chaos);
+			addResultsFromFile(args[1], conn, chaos, refresh);
 			
 			// calculate and update luck
 			Map<String, List<List<String>>> courseResults = getActualResults(conn);
@@ -765,18 +774,39 @@ public class ChaoManager {
 	}
 
 
-	private static void addResultsFromFile(String[] args, Connection conn, List<String> chaos) {
+	private static void addResultsFromFile(String course, Connection conn, List<String> chaos, boolean refresh) {
 		double score = Constants.TOP_PLACE_SCORE;
 		int iter = 1;
 		int numChao = chaos.size();
 		for (String chao : chaos) {
-			String sqlQuery = "INSERT INTO results "
-					+ "(course,name,score)"
-					+ " VALUES ('"+args[1]+"','"+chao+"','"+score+"');";
-			SQLManager.updateDB(conn, sqlQuery);
-			score = Constants.TOP_PLACE_SCORE*(numChao-iter)/numChao; // linear method
-//			score = (double) Math.round(Math.pow(Math.sqrt(Constants.TOP_PLACE_SCORE)*(numChao-iter)/numChao,2) * 100000) / 100000; // power method
+			if (!refresh) {
+				String sqlQuery = "INSERT INTO results "
+						+ "(course,name,score)"
+						+ " VALUES ('"+course+"','"+chao+"','"+score+"');";
+				SQLManager.updateDB(conn, sqlQuery);
+				score = Constants.TOP_PLACE_SCORE*(numChao-iter)/numChao; // linear method
+//				score = (double) Math.round(Math.pow(Math.sqrt(Constants.TOP_PLACE_SCORE)*(numChao-iter)/numChao,2) * 100000) / 100000; // power method
+			}
+			addFinalResultsToPredictionsDB(course, conn, iter, chao);
 			iter ++;
+		}
+	}
+
+
+	private static void addFinalResultsToPredictionsDB(String course,
+			Connection conn, int iter, String chao) {
+		String sqlQuery;
+		sqlQuery = "SELECT id FROM predictions WHERE name = '"+chao+"' AND course = '"+course+"';";
+		ResultSet rs = SQLManager.queryFromDB(conn, sqlQuery);
+		try {
+			if (rs.next()) {
+				sqlQuery = "UPDATE predictions SET "+Constants.ROUND+" = "+iter+" WHERE id = "+rs.getInt(1);
+			} else {
+				throw new SQLException("expected entry for given chao and course: "+chao+", "+course);
+			}
+			SQLManager.updateDB(conn, sqlQuery);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
