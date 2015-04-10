@@ -30,9 +30,9 @@ public class Constants {
 	public static final double PROJECTED_NUM_SWAPS_PER_CHAO = 1;
 	public static final double MILLI = 1000;
 	public static final int SEC_PER_MIN = 60;
-	public static final int FIRST_PLACE_SCORE = 75;
-	public static final int SECOND_PLACE_SCORE = 50;
-	public static final int THIRD_PLACE_SCORE = 25;
+	public static final int FIRST_PLACE_SCORE = 90;
+	public static final int SECOND_PLACE_SCORE = 60;
+	public static final int THIRD_PLACE_SCORE = 30;
 	public static final int FOURTH_PLACE_SCORE = 0;
 	public static final int TOP_PLACE_SCORE = 110;
 	public static final int TOTAL_NUM_CHAOS_GEN_ONE = 48;

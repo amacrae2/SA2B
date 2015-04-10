@@ -848,7 +848,7 @@ public class ChaoManager {
 		MemoryState currState = getCurrMemoryState(conn);
 		MemoryState finalState = getFinalMemoryState(args);
 		double startTime = System.currentTimeMillis();
-		Moveset bestMoveSet = AStarSearch.findBestMoveset(new MovesetWithState(currState), finalState);
+		Moveset bestMoveSet = DijkstrasAlgorithm.findBestMoveset(new MovesetWithState(currState), finalState);
 //		Moveset bestMoveSet = MonteCarlo.findBestMoveset(currState, finalState, new Moveset(), null, 0, startTime);
 		double timeTaken = System.currentTimeMillis() - startTime;
 		printChaoSwapOutput(bestMoveSet, timeTaken);
