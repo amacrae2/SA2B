@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.MinMaxPriorityQueue;
 
-public class AStarSearch {
+public class DijkstrasAlgorithm {
 	
 	private static final int MAX_PQ_SIZE = 10000;
 
