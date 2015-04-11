@@ -60,9 +60,11 @@ public class DijkstrasAlgorithm {
 					mswsTemp.updateScore(Constants.CHAO_SWAP_PENALTY);
 				} else if (move instanceof MoveMemoryCard) {
 					mswsTemp.incrementNumMemoryCardSwaps();
-					if (currMovesetWithState.getMoves().size()!=0 && (prevMoveIsMoveChao(currMovesetWithState,1) || prevTwoMovesAreMoveMemCard(currMovesetWithState))) {
+					if (currMovesetWithState.getMoves().size()!=0 /* && (!prevMoveIsMoveMemCard(currMovesetWithState,1) || prevTwoMovesAreMoveMemCard(currMovesetWithState)) */) {
 						if (prevTwoMovesAreMoveMemCard(currMovesetWithState)) {
 							mswsTemp.updateScore(Constants.MEMORY_CARD_TRIPLE_SWAP_PENALTY);
+						} else if (prevMoveIsMoveMemCard(currMovesetWithState, 1)) {
+							mswsTemp.updateScore(Constants.MEMORY_CARD_DOUBLE_SWAP_PENALTY);
 						} else {
 							mswsTemp.updateScore(Constants.MEMORY_CARD_SWAP_PENALTY);
 						}
@@ -79,15 +81,15 @@ public class DijkstrasAlgorithm {
 		if (currMovesetWithState.getMoves().size() < 2) {
 			return false;
 		}
-		return (!prevMoveIsMoveChao(currMovesetWithState, 1) && !prevMoveIsMoveChao(currMovesetWithState, 2));
+		return (prevMoveIsMoveMemCard(currMovesetWithState, 1) && prevMoveIsMoveMemCard(currMovesetWithState, 2));
 	}
 
-	private static boolean prevMoveIsMoveChao(MovesetWithState currMovesetWithState, int prevIndex) {
+	private static boolean prevMoveIsMoveMemCard(MovesetWithState currMovesetWithState, int prevIndex) {
 		int prevMoveIndex = currMovesetWithState.getMoves().size()-prevIndex;
 		if (prevMoveIndex < 0) {
 			prevMoveIndex = 0;
 		}
-		return currMovesetWithState.getMoves().get(prevMoveIndex) instanceof MoveChao;
+		return currMovesetWithState.getMoves().get(prevMoveIndex) instanceof MoveMemoryCard;
 	} 
 
 }

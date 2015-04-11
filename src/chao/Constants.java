@@ -20,6 +20,7 @@ public class Constants {
 	public static final int FINDS_GOAL_STATE = 10000;
 	public static final int CHAO_SWAP_PENALTY = -10;
 	public static final int MEMORY_CARD_SWAP_PENALTY = -5;
+	public static final int MEMORY_CARD_DOUBLE_SWAP_PENALTY = -1;
 	public static final int MEMORY_CARD_TRIPLE_SWAP_PENALTY = -100;
 	public static final int CHAO_MATCH_SCORE = 15;
 	public static final int CHAO_NON_MATCH_PENALTY = -1;
