@@ -7,3 +7,4 @@ chao*.csv
 bin/chao/*
 *.Rhistory
 */.ipynb_checkpoints/*
+.idea/*
