@@ -553,7 +553,7 @@ public class ChaoManager {
 	private static Map<String, List<Integer>> getRaceResultsFromRecords(Connection conn, String course, boolean onlyFinal) {
 		Map<String, List<Integer>> raceResults = new HashMap<String, List<Integer>>();
 		if (!onlyFinal) {
-			addFourLaneRaceResults(conn, course, raceResults);
+			addSingleRaceResults(conn, course, raceResults);
 		}
 		addFinalRaceResults(conn, course, raceResults);
 		return raceResults;
@@ -578,20 +578,22 @@ public class ChaoManager {
 	}
 
 
-	private static void addFourLaneRaceResults(Connection conn, String course, Map<String, List<Integer>> raceResults) {
+	private static void addSingleRaceResults(Connection conn, String course, Map<String, List<Integer>> raceResults) {
 		ResultSet rs;
 		String sqlQuery = "SELECT * FROM records ";
 		if (course != null) {
 			sqlQuery +=  "WHERE course = '"+course+"'";
 		}
 		sqlQuery += ";";
-		rs = SQLManager.queryFromDB(conn, sqlQuery); 
+		rs = SQLManager.queryFromDB(conn, sqlQuery);
 		try {
 			while (rs.next()) {
 				populateRaceResults(rs, raceResults, 3, Constants.FIRST_PLACE_SCORE);
 				populateRaceResults(rs, raceResults, 4, Constants.SECOND_PLACE_SCORE);
-				populateRaceResults(rs, raceResults, 5, Constants.THIRD_PLACE_SCORE);
-				populateRaceResults(rs, raceResults, 6, Constants.FOURTH_PLACE_SCORE);
+				if (!course.equals("karate")) {
+					populateRaceResults(rs, raceResults, 5, Constants.THIRD_PLACE_SCORE);
+					populateRaceResults(rs, raceResults, 6, Constants.FOURTH_PLACE_SCORE);
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -618,12 +620,15 @@ public class ChaoManager {
 			handleWrongSizeException();
 		}
 		if (args.length == 6) {
-			addResultFromInput(args, conn);
+			addResultFromInput(args, conn, false);
 		} else {
 			boolean refresh = false;
 			if (args.length == 4) {
 				if (args[3].equals("refresh")) {
 					refresh = true;
+				} else if (args[1].equals("karate")) {
+					addResultFromInput(args, conn, true);
+					return;
 				} else {
 					System.out.println("expecting 'refresh' as 3rd arg if going just wanting to update luck and predictions DB");
 					throw new ArgumentNumberException();
@@ -811,12 +816,16 @@ public class ChaoManager {
 	}
 
 
-	private static void addResultFromInput(String[] args, Connection conn) throws ImpossibleRaceException {
+	private static void addResultFromInput(String[] args, Connection conn, boolean karate) throws ImpossibleRaceException {
 		String course = args[1];
 		String firstPlace = args[2];
 		String secondPlace = args[3];
-		String thirdPlace = args[4];
-		String fourthPlace = args[5];
+		String thirdPlace = "";
+		String fourthPlace = ""; 
+		if (!karate) {
+			thirdPlace = args[4];
+			fourthPlace = args[5];
+		}
 		List<String> currChaoNames = getCurrChaoNames(args, 2);
 		if (!raceIsPossible(conn, course, currChaoNames)) {
 			throw new ImpossibleRaceException();

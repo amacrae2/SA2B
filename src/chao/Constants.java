@@ -9,8 +9,10 @@ public class Constants {
 	public static final String MC_TWO_NAME = "Black1";
 	public static final String MC_THREE_NAME = "Black2";
 	public static final String MC_FOUR_NAME = "AM";
-	public static final String MC_FIVE_NAME = "Gray1";
-	public static final String MC_SIX_NAME = "Gray2";
+	public static final String MC_FIVE_NAME = "Gray3";
+	public static final String MC_SIX_NAME = "Gray4";
+	public static final String MC_SEVEN_NAME = "Black3";
+	public static final String MC_EIGHT_NAME = "32mb";
 	public static final String HERO_GARDEN_NAME = "Hero";
 	public static final String NEUTRAL_GARDEN_NAME = "Neutral";
 	public static final String DARK_GARDEN_NAME = "Dark";
@@ -67,6 +69,7 @@ public class Constants {
 	    add("onix");
 	    add("diamond");
 	    add("overall");
+	    add("karate");
 	}};
 	
 	
@@ -78,6 +81,8 @@ public class Constants {
 		mcNames.add(MC_FOUR_NAME);
 		mcNames.add(MC_FIVE_NAME);
 		mcNames.add(MC_SIX_NAME);
+		mcNames.add(MC_SEVEN_NAME);
+		mcNames.add(MC_EIGHT_NAME);
 		return mcNames;
 	}
 	
