@@ -5,7 +5,7 @@ import trueskill
 
 from truescore_util import update_trueskills
 from sql_util import get_sql_cursor, get_sql_db
-from ranks import get_ranks
+from ranks import get_ranks, print_rank_moves
 
 
 def update_truescore(course, chaos):
@@ -34,6 +34,7 @@ def update_truescore(course, chaos):
                                                                                         course))
         db.commit()
 
+
 def add_result_to_db(db_name, course, chaos):
     db = get_sql_db()
     cursor = get_sql_cursor(db)
@@ -57,7 +58,7 @@ if __name__ == "__main__":
     old_ranks = get_ranks(args.course)
     update_truescore(args.course, chaos)
     new_ranks = get_ranks(args.course)
-
+    print_rank_moves(old_ranks, new_ranks)
 
     add_result_to_db("records_all", args.course, chaos)
     if args.add:
