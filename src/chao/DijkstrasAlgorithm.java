@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.MinMaxPriorityQueue;
 
+// actually A* ... not Dijkstra's
 public class DijkstrasAlgorithm {
 	
 	private static final int MAX_PQ_SIZE = 10000;
@@ -41,12 +42,13 @@ public class DijkstrasAlgorithm {
 				System.out.println("iterations: "+iter);
 				long diff = System.currentTimeMillis()-start;
 				totalms+=diff;
-				long aveTimePerIter = totalms/iter;
+//				long aveTimePerIter = totalms/iter;
 				long aveTimePerMove = totalms/(currMovesetWithState.getTotalMoves()+1);
-				System.out.println("time: "+ (diff));
-				System.out.println("ave time per iter: "+ (aveTimePerIter));
-				System.out.println("ave time per move: "+ (aveTimePerMove));	
+//				System.out.println("time: "+ (diff));
+//				System.out.println("ave time per iter: "+ (aveTimePerIter));
+//				System.out.println("ave time per move: "+ (aveTimePerMove));	
 				System.out.println("projected time remaining: "+((aveTimePerMove*(Constants.GARDEN_SIZE*Constants.NUM_GARDENS*Constants.NUM_MEMORY_CARDS*Constants.PROJECTED_NUM_SWAPS_PER_CHAO-currMovesetWithState.getTotalMoves()))/Constants.MILLI/Constants.SEC_PER_MIN)+" Min");
+				System.out.println(currMovesetWithState.getState().toString());
 				start = System.currentTimeMillis();
 			}
 			// get next movesetWithStates and add them to priority queue
@@ -58,6 +60,12 @@ public class DijkstrasAlgorithm {
 				if (move instanceof MoveChao) {
 					mswsTemp.incrementNumChaoSwaps();
 					mswsTemp.updateScore(Constants.CHAO_SWAP_PENALTY);
+					if (((MoveChao) move).putsChaoInRightMcButWrongGarden(finalState)) {
+						mswsTemp.updateScore(Constants.CHAO_RIGHT_MC_WRONG_GARDEN_PENALTY);
+					} else if (((MoveChao) move).movesChaoOutOfRightMcButWrongGarden(finalState)) {
+						mswsTemp.updateScore(Constants.CHAO_RIGHT_MC_WRONG_GARDEN_MOVE_OUT_SCORE);
+					}
+					
 				} else if (move instanceof MoveMemoryCard) {
 					mswsTemp.incrementNumMemoryCardSwaps();
 					if (currMovesetWithState.getMoves().size()!=0 /* && (!prevMoveIsMoveMemCard(currMovesetWithState,1) || prevTwoMovesAreMoveMemCard(currMovesetWithState)) */) {

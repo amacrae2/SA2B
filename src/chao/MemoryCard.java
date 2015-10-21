@@ -111,9 +111,9 @@ public class MemoryCard {
 	
 	public String toString() {
 		String result = name;
-		result += ": [Hero - "+hero.toString()+"], ";
-		result += ": [Neutral - "+neutral.toString()+"], ";
-		result += ": [Dark - "+dark.toString()+"]";
+		result += ": [Hero - "+hero.toString()+"], \n";
+		result += ": [Neutral - "+neutral.toString()+"], \n";
+		result += ": [Dark - "+dark.toString()+"]\n";
 		return result;
 	}
 	

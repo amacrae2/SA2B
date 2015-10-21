@@ -1128,11 +1128,11 @@ public class ChaoManager {
 		
 		String sqlQuery = "INSERT INTO Chao "
 				+ "(name,memory_card,garden,swim,fly,run,power,total,"
-				+ "swim_stat,fly_stat,run_stat,power_stat,total_stat,stamina,stamina_stat)"
+				+ "swim_stat,fly_stat,run_stat,power_stat,total_stat,stamina,stamina_stat,hat,intellegence,trips,luck,generation)"
 				+ " VALUES ('"+name+"','"+memoryCard+"','"+garden+"',"
 				+ "'"+swim+"','"+fly+"','"+run+"','"+power+"','"+total+"',"
 				+ "'"+swimStat+"','"+flyStat+"','"+runStat+"','"+powerStat
-				+"','"+totalStat+"','"+stamina+"','"+staminaStat+"','"+"0"+"','"+"0"+"');";
+				+"','"+totalStat+"','"+stamina+"','"+staminaStat+"','"+"0"+"','"+"0"+"','"+"0"+"','"+"0"+"','"+Constants.GENERATION+"');";
 		SQLManager.updateDB(conn, sqlQuery);
 	}
 	

@@ -53,6 +53,32 @@ public class MemoryState {
 		addChaoMoves(moves);
 		return moves;
 	}
+	
+	public ChaoGarden findGardenChaoIsIn(String chao) throws ChaoSwapException {
+		for (MemoryCard mc : memoryCards.values()) {
+			for (ChaoGarden garden : mc.getChaoGardenSet()) {
+				for (String currChao : garden.getChaos()) {
+					if (chao.equals(currChao)) {
+						return garden;
+					}
+				}
+			}
+		}
+		throw new ChaoSwapException("chao "+chao+" not found in any gardens or memory cards");
+	}
+	
+	public MemoryCard findMcChaoIsIn(String chao) throws ChaoSwapException {
+		for (MemoryCard mc : memoryCards.values()) {
+			for (ChaoGarden garden : mc.getChaoGardenSet()) {
+				for (String currChao : garden.getChaos()) {
+					if (chao.equals(currChao)) {
+						return mc;
+					}
+				}
+			}
+		}
+		throw new ChaoSwapException("chao "+chao+"not found in any gardens or memory cards");
+	}
 
 	public boolean equals(MemoryState mState) {
 		if (!memoryCardsSame(mState)) {
@@ -268,9 +294,9 @@ public class MemoryState {
 	
 	public String toString() {
 		String result = "";
-		result += "[gc - "+gc.toString()+"], ";
+		result += "[gc - "+gc.toString()+"], \n";
 		for (String key : memoryCards.keySet()) {
-			result += "[mcs - "+memoryCards.get(key).toString()+"]";
+			result += "[mc - "+memoryCards.get(key).toString()+"]\n";
 		}
 		return result;
 	}

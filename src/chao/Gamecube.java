@@ -36,8 +36,8 @@ public class Gamecube {
 	
 	public String toString() {
 		String result = "";
-		result += "[left mc - "+leftSlot.toString()+"], ";
-		result += "[right mc - "+rightSlot.toString()+"]";
+		result += "[left mc - "+leftSlot.toString()+"], \n";
+		result += "[right mc - "+rightSlot.toString()+"]\n";
 		return result;
 	}
 	

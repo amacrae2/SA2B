@@ -17,7 +17,8 @@ public class Constants {
 	public static final String NEUTRAL_GARDEN_NAME = "Neutral";
 	public static final String DARK_GARDEN_NAME = "Dark";
 	
-	public static final String ROUND = "round3";
+	public static final String ROUND = "round4";
+	public static final int GENERATION = 3;
 	public static final int GARDEN_SIZE = 8;
 	public static final int FINDS_GOAL_STATE = 10000;
 	public static final int CHAO_SWAP_PENALTY = -10;
@@ -26,6 +27,8 @@ public class Constants {
 	public static final int MEMORY_CARD_TRIPLE_SWAP_PENALTY = -100;
 	public static final int CHAO_MATCH_SCORE = 15;
 	public static final int CHAO_NON_MATCH_PENALTY = -1;
+	public static final int CHAO_RIGHT_MC_WRONG_GARDEN_PENALTY = -17;
+	public static final int CHAO_RIGHT_MC_WRONG_GARDEN_MOVE_OUT_SCORE = 10;
 	public static final int MAX_ITERATIONS = 100;
 	public static final long TIME_ALLOWED_PER_MOVE = 1000*60*1;
 	public static final int NUM_GARDENS = 3;
