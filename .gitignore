@@ -8,3 +8,4 @@ bin/chao/*
 *.Rhistory
 */.ipynb_checkpoints/*
 .idea/*
+*.pyc
