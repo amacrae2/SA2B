@@ -10,19 +10,15 @@ from ranks import get_ranks, print_rank_moves
 
 def update_truescore(course, chaos):
     db = get_sql_db()
-    cursor = get_sql_cursor(db)
-    cursor.execute(
-        "SELECT name, mu, sigma FROM truescore WHERE name IN ('{}','{}','{}','{}') AND course = '{}';".format(
-                                                                                            *chaos + [course]))
-
-    numchao = int(cursor.rowcount)
-    assert numchao == 4, numchao
     trueskill_ratings = []
-    chao_names = []
-    for x in range(0, numchao):
+    for i in range(0, len(chaos)):
+        cursor = get_sql_cursor(db)
+        cursor.execute("SELECT name, mu, sigma FROM truescore WHERE name = '{}' AND course = '{}';".format(chaos[i],
+                                                                                                           course))
+        numchao = int(cursor.rowcount)
+        assert numchao == 1, numchao
         row = cursor.fetchone()
         trueskill_ratings.append(trueskill.Rating(row[1], row[2]))
-        chao_names.append(row[0])
     new_trueskills = update_trueskills(trueskill_ratings)
     cursor = get_sql_cursor(db)
     for i in xrange(len(new_trueskills)):
@@ -30,7 +26,7 @@ def update_truescore(course, chaos):
             "UPDATE truescore SET mu = {}, sigma = {} WHERE name = '{}' AND course = '{}';".format(
                                                                                         new_trueskills[i].mu,
                                                                                         new_trueskills[i].sigma,
-                                                                                        chao_names[i],
+                                                                                        chaos[i],
                                                                                         course))
         db.commit()
 

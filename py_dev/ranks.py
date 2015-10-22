@@ -41,20 +41,26 @@ def find_ranks(db, course):
 
 def print_rank_moves(old_ranks, new_ranks):
     for i in xrange(len(new_ranks)):
-        success = print_rank_move(new_ranks, old_ranks, i, i, bcolors.WARNING, 0)
+        success = print_rank_move(new_ranks, old_ranks, i, i, bcolors.WARNING)
         if not success:
             increment = 0
             while True:
                 increment += 1
-                if print_rank_move(new_ranks, old_ranks, i, i+increment, bcolors.FAIL, increment) or \
-                   print_rank_move(new_ranks, old_ranks, i, i-increment, bcolors.OKGREEN, increment):
+                if print_rank_move(new_ranks, old_ranks, i, i+increment, bcolors.FAIL) or \
+                   print_rank_move(new_ranks, old_ranks, i, i-increment, bcolors.OKGREEN):
                     break
 
 
-def print_rank_move(new_ranks, old_ranks, new_index, old_index, highlight, movement):
+def print_rank_move(new_ranks, old_ranks, new_index, old_index, highlight):
     if 0 <= old_index < len(old_ranks) and old_ranks[old_index].name == new_ranks[new_index].name:
-        print "{}\t{}\t{}\t{}\t{}".format(new_ranks[new_index].rank, new_ranks[new_index].name, new_ranks[new_index].mu,
-                                          new_ranks[new_index].sigma, highlight+str(movement)+bcolors.ENDC)
+        change_in_rank = old_ranks[old_index].rank[0] - new_ranks[new_index].rank[0]
+        highlight = bcolors.WARNING
+        if change_in_rank > 0:
+            highlight = bcolors.OKGREEN
+        elif change_in_rank < 0:
+            highlight = bcolors.FAIL
+        print "{}\t{}\t{}\t{}\t{}".format(new_ranks[new_index].rank[0]+1, new_ranks[new_index].name, new_ranks[new_index].mu,
+                                          new_ranks[new_index].sigma, highlight+str(change_in_rank)+bcolors.ENDC)
         return True
     else:
         return False
