@@ -54,7 +54,7 @@ if __name__ == "__main__":
     old_ranks = get_ranks(args.course)
     update_truescore(args.course, chaos)
     new_ranks = get_ranks(args.course)
-    print_rank_moves(old_ranks, new_ranks)
+    print_rank_moves(old_ranks, new_ranks, args.course)
 
     add_result_to_db("records_all", args.course, chaos)
     if args.add:

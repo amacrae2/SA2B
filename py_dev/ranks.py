@@ -39,19 +39,20 @@ def find_ranks(db, course):
     return ranks
 
 
-def print_rank_moves(old_ranks, new_ranks):
+def print_rank_moves(old_ranks, new_ranks, course):
+    db = get_sql_db()
     for i in xrange(len(new_ranks)):
-        success = print_rank_move(new_ranks, old_ranks, i, i, bcolors.WARNING)
+        success = print_rank_move(new_ranks, old_ranks, i, i, db, course)
         if not success:
             increment = 0
             while True:
                 increment += 1
-                if print_rank_move(new_ranks, old_ranks, i, i+increment, bcolors.FAIL) or \
-                   print_rank_move(new_ranks, old_ranks, i, i-increment, bcolors.OKGREEN):
+                if print_rank_move(new_ranks, old_ranks, i, i+increment, db, course) or \
+                   print_rank_move(new_ranks, old_ranks, i, i-increment, db, course):
                     break
 
 
-def print_rank_move(new_ranks, old_ranks, new_index, old_index, highlight):
+def print_rank_move(new_ranks, old_ranks, new_index, old_index, db, course):
     if 0 <= old_index < len(old_ranks) and old_ranks[old_index].name == new_ranks[new_index].name:
         change_in_rank = old_ranks[old_index].rank[0] - new_ranks[new_index].rank[0]
         highlight = bcolors.WARNING
@@ -61,6 +62,12 @@ def print_rank_move(new_ranks, old_ranks, new_index, old_index, highlight):
             highlight = bcolors.FAIL
         print "{}\t{}\t{}\t{}\t{}".format(new_ranks[new_index].rank[0]+1, new_ranks[new_index].name, new_ranks[new_index].mu,
                                           new_ranks[new_index].sigma, highlight+str(change_in_rank)+bcolors.ENDC)
+        cursor = get_sql_cursor(db)
+
+        cursor.execute("UPDATE truescore SET rank = {} WHERE name = '{}' AND course = '{}';".format(new_ranks[new_index].rank[0]+1,
+                                                                                                    new_ranks[new_index].name,
+                                                                                                    course))
+        db.commit()
         return True
     else:
         return False
