@@ -27,7 +27,7 @@ public class Constants {
 	public static final int MEMORY_CARD_TRIPLE_SWAP_PENALTY = -100;
 	public static final int CHAO_MATCH_SCORE = 15;
 	public static final int CHAO_NON_MATCH_PENALTY = -1;
-	public static final int CHAO_RIGHT_MC_WRONG_GARDEN_PENALTY = -17;
+	public static final int CHAO_RIGHT_MC_WRONG_GARDEN_PENALTY = -5; // -17
 	public static final int CHAO_RIGHT_MC_WRONG_GARDEN_MOVE_OUT_SCORE = 10;
 	public static final int MAX_ITERATIONS = 100;
 	public static final long TIME_ALLOWED_PER_MOVE = 1000*60*1;

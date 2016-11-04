@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -222,12 +223,38 @@ public class ChaoManager {
 		try {
 			rs.next();
 			String chaos = rs.getString(1);
-			chaos = chaos.replaceFirst(chao1, chao2);
+			chaos = updateChaosMCString(chao1, chao2, chaos);
+//			chaos = chaos.replaceFirst(chao1, chao2);
 			String sqlQueryUpdate = "UPDATE Memory_Card SET chao = '"+chaos+"' "+whereClause;
 			SQLManager.updateDB(conn, sqlQueryUpdate);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+
+	private static String updateChaosMCString(String chao1, String chao2, String chaos) {
+		List<String> chaoList = new ArrayList<String>(Arrays.asList(chaos.split(" ")));
+		if (chao1.equals("")) {
+			if (!chaos.equals("")) {
+				chaos += " ";
+			}
+			return chaos + chao2;
+		}
+		else if (chao2.equals("")) {
+			chaoList.remove(chaoList.indexOf(chao1));
+		}
+		else {
+			chaoList.set(chaoList.indexOf(chao1), chao2);
+		}
+		String newChaos = "";
+		for (int i = 0; i < chaoList.size(); i++) {
+			newChaos += chaoList.get(i);
+			if (i != chaoList.size() - 1) {
+				newChaos += " ";
+			}
+		}
+		return newChaos;
 	}
 	
 	private static void updateChao(Connection conn, String name, String memoryCard, String garden) {

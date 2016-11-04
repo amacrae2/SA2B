@@ -14,7 +14,7 @@ def get_ranks(course):
     ranks = find_ranks(db, course)
     cursor = get_sql_cursor(db)
 
-    cursor.execute("SELECT name, mu, sigma FROM truescore WHERE course = '{}' ORDER BY mu DESC;".format(course))
+    cursor.execute("SELECT name, mu, sigma FROM trueskill WHERE course = '{}' ORDER BY mu DESC;".format(course))
 
     numchao = int(cursor.rowcount)
     assert numchao == len(ranks), "numchao {} != num ranks {}".format(numchao, len(ranks))
@@ -28,7 +28,7 @@ def get_ranks(course):
 def find_ranks(db, course):
     cursor = get_sql_cursor(db)
 
-    cursor.execute("SELECT mu FROM truescore WHERE course = '{}' ORDER BY mu DESC;".format(course))
+    cursor.execute("SELECT mu FROM trueskill WHERE course = '{}' ORDER BY mu DESC;".format(course))
 
     numchao = int(cursor.rowcount)
     mus = []
@@ -64,7 +64,10 @@ def print_rank_move(new_ranks, old_ranks, new_index, old_index, db, course):
                                           new_ranks[new_index].sigma, highlight+str(change_in_rank)+bcolors.ENDC)
         cursor = get_sql_cursor(db)
 
-        cursor.execute("UPDATE truescore SET rank = {} WHERE name = '{}' AND course = '{}';".format(new_ranks[new_index].rank[0]+1,
+        cursor.execute("UPDATE trueskill SET rank = {} WHERE name = '{}' AND course = '{}';".format(new_ranks[new_index].rank[0]+1,
+                                                                                                    new_ranks[new_index].name,
+                                                                                                    course))
+        cursor.execute("UPDATE predictions SET trueskill = {} WHERE name = '{}' AND course = '{}';".format(new_ranks[new_index].rank[0]+1,
                                                                                                     new_ranks[new_index].name,
                                                                                                     course))
         db.commit()
